@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fretboard Trainer</title>
+    <style>
+        /* Basic styling for better visibility */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        #fretboard-canvas {
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+
+        #selection-container label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        #scale-select {
+            margin-left: 10px;
+        }
+
+        #interval-checkboxes label {
+            display: inline-block;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+    </style>
+    <script src="script.js" defer></script> <!-- Ensure this path is correct -->
+</head>
+<body>
+    <h1 id="main-title">Fretboard Trainer</h1> <!-- Added ID -->
+
+    <!-- Tonic selection dropdown -->
+    <label for="tonic-select" id="tonic-label">Select Tonic:</label> <!-- Added ID -->
+    <select id="tonic-select"></select> <!-- Populated by JavaScript -->
+
+    <br><br>
+
+    <!-- Radio buttons for selecting scale or custom intervals -->
+ 
+    <div id="selection-container">
+        <!-- Option 1: Find notes from scale with dropdown -->
+        <label id="scale-option-label"> <!-- Added ID -->
+            <input type="radio" name="note-finding-option" id="scale-option" value="scale" checked>
+            Find notes from scale:
+            <select id="scale-select"></select> <!-- Populated by JavaScript -->
+        </label>
+
+        <br>
+
+        <!-- Option 2: Find notes from custom intervals with checkboxes -->
+        <label id="interval-option-label"> <!-- Added ID -->
+            <input type="radio" name="note-finding-option" id="interval-option" value="interval">
+            Find notes from custom intervals:
+            <div id="interval-checkboxes" style="display: inline-block; margin-left: 10px;"></div>
+        </label>
+    </div>
+
+    <br>
+
+    <!-- Button to generate scale notes and display results -->
+    <button id="scaleButton">Scale Notes:</button>
+    <div id="result"></div> <!-- Display scale notes or errors -->
+
+    <br><br>
+
+
+<!-- Add radio buttons for selecting mode -->
+<div id="mode-selection-container"> <!-- Added ID -->
+<label id="mselection-label">Select Mode:</label>
+
+    <label id="training-mode-label"> <!-- Added ID -->
+        <input type="radio" name="mode-option" value="training" checked> Training Mode
+    </label>
+    <label id="challenge-mode-label"> <!-- Added ID -->
+        <input type="radio" name="mode-option" value="challenge" style="margin-bottom: 15px;"> Challenge Mode
+    </label>
+<span id="challenge-timer-container">
+     <!-- Timer controls -->
+     <input type="number" id="timeInput" min="1" placeholder="How many seconds?">
+
+    <button id="startButton">Go!</button>
+    <button id="stopButton">Stop</button>
+    <span id="timer"></span> <!-- Timer display element -->
+</span>
+<br class="small-break">
+<label id="mselection-label1" style="margin-left: 288px; padding-top: 4px; display:none" >          Direction:</label>
+<label style="display:none">
+    <input id="asc" type="radio" name="pattern-direction" value="ascending" style="display:none"  disabled> Ascending
+</label>
+<label style="display:none">
+    <input id="dis" type="radio" name="pattern-direction" value="descending" style="display:none" disabled> Descending
+</label>
+</div>
+
+<!-- Add elements for counting clicks -->
+<div id="click-count-container" style="display: none;"> <!-- Added ID -->
+    <p id="correct-clicks">Correct Clicks: <span id="correct-count">0</span></p> <!-- Added ID -->
+    <p id="incorrect-clicks">Incorrect Clicks: <span id="incorrect-count">0</span></p> <!-- Added ID -->
+</div>
+
+<!-- Add a section to display the scale degree counts -->
+<div id="scale-degree-container" style="display: none;"> <!-- Added ID -->
+    <h3 id="scale-degree-title">Scale Degree Accuracy:</h3> <!-- Added ID -->
+    <ul id="scale-degree-list1">
+        <!-- This list will be dynamically updated -->
+    </ul>
+</div>
+
+<!-- Add a section to display the missed scale degree counts -->
+<div id="missed-scale-degree-container" style="display: none;"> <!-- Added ID -->
+    <h3 id="missed-scale-degree-title">Scale Degree Misses:</h3> <!-- Added ID -->
+    <ul id="missed-scale-degree-list">
+        <!-- This list will be dynamically updated -->
+    </ul>
+</div>
+
+<br><br>
+<div id="scale-degree-list">
+    <!-- Dynamic list will be inserted here -->
+</div>
+
+<style>
+
+br.small-break {
+              display: block; /* makes it have a width */
+            content: ""; /* clears default height */
+            margin-top: 100; /* change this to whatever height you want it */
+}
+
+#scaleButton {
+    display: inline-block; /* Ensure button remains inline */
+}
+
+#result {
+    display: inline-block; /* Makes div behave like an inline element */
+    margin-left: 10px; /* Optional spacing between the button and result */
+    vertical-align: middle; /* Align vertically with the button */
+}
+
+
+#arr{    min-height: 60px; /* Adjust the height as needed */
+    margin-bottom: 10px; /* Space between context-message and fretboard */
+}
+
+#mode-selection-container {
+    min-height: 60px; /* Adjust height based on expected content */
+    margin-bottom: 0px; /* Space between mode-selection-container and next element */
+}
+
+#context-message {
+    min-height: 50px; /* Adjust the height as needed */
+    margin-bottom: 10px; /* Space between context-message and fretboard */
+}
+
+#scale-degree-list {
+    min-height: 100px; /* Adjust to accommodate your maximum expected content */
+    margin-bottom: 0px; /* Keep consistent spacing below */
+    display: flex; /* Flexbox ensures proper alignment of dynamic content */
+    flex-direction: column; /* Stack items vertically */
+    justify-content: flex-start; /* Content starts at the top */
+}
+
+#scale-degree-list ul {
+    list-style-type: none; /* Remove bullets */
+    padding: 0; /* Remove padding */
+    margin: 0; /* Remove margin */
+    display: flex; /* Flexbox for vertical stacking */
+    flex-direction: column; /* Arrange rows vertically */
+    gap: 5px; /* Space between rows */
+}
+
+#scale-degree-list li {
+    display: grid; /* Use grid layout for columns */
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); /* Dynamic column sizing */
+    gap: 0; /* Remove gaps between grid items */
+    align-items: center; /* Vertically align grid items */
+    font-size: 16px;
+    line-height: 1.6;
+    text-align: center; /* Center-align text */
+}
+
+.degree {
+    font-weight: bold;
+}
+
+.accuracy,
+.misses {
+    display: flex; /* Flexbox to group icons and numbers */
+    align-items: center; /* Align icon with number vertically */
+    gap: 5px; /* Small space between icon and number */
+    justify-content: center; /* Center-align within grid cell */
+}
+
+.accuracy {
+    color: green; /* Green for ticks */
+}
+
+.misses {
+    color: red; /* Red for crosses */
+}
+
+</style>
+
+   
+
+<img id="arr" src="turn-right.png" alt="Image Description" style="position: absolute; top: 275px; left: 258px; width: 40px; height: auto; display:none">
+
+
+<div id="context-message"></div>
+
+
+    <!-- Fretboard canvas -->
+    <canvas id="fretboard-canvas" width="800" height="200"></canvas>
+
+</body>
+</html>
